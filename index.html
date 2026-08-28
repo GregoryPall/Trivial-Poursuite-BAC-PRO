@@ -740,10 +740,17 @@ function renderWaiting(state){
 
 window.startGame=async function(){
   if(!gameRef||!localState)return;
-  const connected=localState.connectedTeams||{};
-  const teams={};
-  for(let t=1;t<=4;t++)teams[t]=connected[`t${t}`]?'player':null;
-  await update(gameRef,{phase:'theme_select',teams,currentTeam:1});
+  const btn=document.getElementById('btn-start-game');
+  if(btn)btn.disabled=true;
+  try{
+    const connected=localState.connectedTeams||{};
+    const teams={};
+    for(let t=1;t<=4;t++)if(connected[`t${t}`])teams[t]='player';
+    await update(gameRef,{phase:'theme_select',teams,currentTeam:1,themeSelectTurn:0,activeThemes:[]});
+  }catch(e){
+    toast('Erreur au démarrage : '+e.message);
+    if(btn)btn.disabled=false;
+  }
 };
 
 /* ══ FIN DE PARTIE ══ */
